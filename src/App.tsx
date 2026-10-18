@@ -4,6 +4,13 @@ import SignupPage from "./presentation/pages/signup-page";
 import PublicRoute from "./presentation/guards/public-route";
 import PrivateRoute from "./presentation/guards/private-route";
 import HomePage from "./presentation/pages/home-page";
+import LoginPage from "./presentation/pages/login-page";
+import ForgotPasswordPage from "./presentation/pages/forgot-password-page";
+import ResetPasswordPage from "./presentation/pages/reset-password-page";
+import BagsPage from "./presentation/pages/bags-page";
+import ProductsPage from "./presentation/pages/products-page";
+import PickupWindowsPage from "./presentation/pages/pickup-windows-page";
+import OrdersPage from "./presentation/pages/orders-page";
 
 function App() {
   return (
@@ -13,10 +20,17 @@ function App() {
       <Routes>
         <Route element={<PublicRoute />}>
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
         </Route>
 
         <Route element={<PrivateRoute />}>
           <Route path="/" element={<HomePage />} />
+          <Route path="/bags" element={<BagsPage />} />
+          <Route path="/products" element={<ProductsPage />} />
+          <Route path="/pickup-windows" element={<PickupWindowsPage />} />
+          <Route path="/orders" element={<OrdersPage />} />
         </Route>
       </Routes>
     </>

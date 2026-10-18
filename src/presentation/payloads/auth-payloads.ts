@@ -20,3 +20,38 @@ export const signupSchema = z
   });
 
 export type SignupPayload = z.infer<typeof signupSchema>;
+
+export const loginSchema = z.object({
+  email: z.email("O email deve ser válido"),
+  password: z
+    .string()
+    .min(8, "A senha deve ser maior que 8 caracteres")
+    .max(72, "A senha deve ser menor que 72 caracteres"),
+});
+
+export type LoginPayload = z.infer<typeof loginSchema>;
+
+export const requestPasswordResetSchema = z.object({
+  email: z.email("O email deve ser válido"),
+});
+
+export type RequestPasswordResetPayload = z.infer<
+  typeof requestPasswordResetSchema
+>;
+
+export const resetPasswordSchema = z
+  .object({
+    email: z.email("O email deve ser válido"),
+    code: z.string().regex(/^\d{6}$/, "O código deve ter exatamente 6 dígitos"),
+    newPassword: z
+      .string()
+      .min(8, "A senha deve ser maior que 8 caracteres")
+      .max(72, "A senha deve ser menor que 72 caracteres"),
+    confirmNewPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmNewPassword, {
+    error: "As senhas não coincidem",
+    path: ["confirmNewPassword"],
+  });
+
+export type ResetPasswordPayload = z.infer<typeof resetPasswordSchema>;

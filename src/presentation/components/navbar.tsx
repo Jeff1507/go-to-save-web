@@ -1,10 +1,15 @@
 import {
   AppBar,
+  Box,
+  Button,
   Container,
   Divider,
+  Drawer,
   IconButton,
+  List,
   ListItem,
   ListItemAvatar,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   Menu,
@@ -13,20 +18,124 @@ import {
   Toolbar,
   Tooltip,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
-import { LogoutOutlined } from "@mui/icons-material";
+import { alpha } from "@mui/material/styles";
+import {
+  HomeOutlined,
+  Inventory2Outlined,
+  LogoutOutlined,
+  MenuOutlined,
+  ReceiptLongOutlined,
+  ScheduleOutlined,
+  ShoppingBagOutlined,
+} from "@mui/icons-material";
 import { useRequireUser, userQueryKey } from "../../core/hooks/use-user";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { logoutUser } from "../../data/repositories/auth-repository";
-import { useNavigate } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import UserAvatar from "./user-avatar";
 import Logo from "./logo";
+
+const tabs = [
+  { label: "Início", to: "/", icon: <HomeOutlined />, end: true },
+  { label: "Sacolas", to: "/bags", icon: <ShoppingBagOutlined /> },
+  { label: "Produtos", to: "/products", icon: <Inventory2Outlined /> },
+  {
+    label: "Janelas de retirada",
+    to: "/pickup-windows",
+    icon: <ScheduleOutlined />,
+  },
+  { label: "Pedidos", to: "/orders", icon: <ReceiptLongOutlined /> },
+];
+
+function NavTabs() {
+  return (
+    <Stack component="nav" direction="row" spacing={0.5}>
+      {tabs.map(({ label, to, icon, end }) => (
+        <Button
+          key={to}
+          component={NavLink}
+          to={to}
+          end={end}
+          startIcon={icon}
+          color="inherit"
+          sx={(theme) => ({
+            px: 2,
+            py: 1,
+            borderRadius: 3,
+            whiteSpace: "nowrap",
+            fontWeight: 500,
+            color: "text.secondary",
+            "&:hover": { bgcolor: "action.hover" },
+            '&[aria-current="page"]': {
+              color: "primary.main",
+              fontWeight: 600,
+              bgcolor: alpha(theme.palette.primary.main, 0.1),
+            },
+          })}
+        >
+          {label}
+        </Button>
+      ))}
+    </Stack>
+  );
+}
+
+function NavDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
+  return (
+    <Drawer
+      open={open}
+      onClose={onClose}
+      slotProps={{ paper: { sx: { width: 280 } } }}
+    >
+      <Box sx={{ p: 2 }}>
+        <Logo size="sm" />
+      </Box>
+
+      <Divider />
+
+      <List component="nav" sx={{ p: 1.5 }}>
+        {tabs.map(({ label, to, icon, end }) => (
+          <ListItemButton
+            key={to}
+            component={NavLink}
+            to={to}
+            end={end}
+            onClick={onClose}
+            sx={(theme) => ({
+              mb: 0.5,
+              borderRadius: 3,
+              color: "text.secondary",
+              "& .MuiListItemIcon-root": { color: "inherit", minWidth: 40 },
+              "&:hover": { bgcolor: "action.hover" },
+              '&[aria-current="page"]': {
+                color: "primary.main",
+                bgcolor: alpha(theme.palette.primary.main, 0.1),
+                "& .MuiListItemText-primary": { fontWeight: 600 },
+              },
+            })}
+          >
+            <ListItemIcon>{icon}</ListItemIcon>
+            <ListItemText primary={label} />
+          </ListItemButton>
+        ))}
+      </List>
+    </Drawer>
+  );
+}
 
 function Navbar() {
   const user = useRequireUser();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("lg"), {
+    noSsr: true,
+  });
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const { mutate: logout } = useMutation({
     mutationFn: logoutUser,
@@ -50,15 +159,42 @@ function Navbar() {
   return (
     <AppBar
       position="sticky"
+      elevation={0}
       sx={{
         bgcolor: "background.paper",
       }}
     >
       <Container>
-        <Toolbar disableGutters sx={{ justifyContent: "space-between" }}>
-          <Logo size="sm" />
+        <Toolbar
+          disableGutters
+          sx={{
+            display: isMobile ? "flex" : "grid",
+            gridTemplateColumns: "1fr auto 1fr",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: 2,
+          }}
+        >
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+            {isMobile && (
+              <IconButton
+                edge="start"
+                aria-label="Abrir menu"
+                onClick={() => setDrawerOpen(true)}
+              >
+                <MenuOutlined />
+              </IconButton>
+            )}
+            <Logo size="sm" />
+          </Stack>
 
-          <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
+          {!isMobile && <NavTabs />}
+
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{ alignItems: "center", justifySelf: "end" }}
+          >
             <Tooltip title="Configurações da conta">
               <IconButton onClick={handleOpen} sx={{ p: 0 }}>
                 <UserAvatar avatarUrl={user.avatarUrl} />
@@ -112,6 +248,10 @@ function Navbar() {
           </Stack>
         </Toolbar>
       </Container>
+
+      {isMobile && (
+        <NavDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+      )}
     </AppBar>
   );
 }
