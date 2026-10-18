@@ -45,7 +45,7 @@ const tabs = [
   { label: "Produtos", to: "/products", icon: <Inventory2Outlined /> },
   {
     label: "Janelas de retirada",
-    to: "/pickup-windows",
+    to: "/pickup-presets",
     icon: <ScheduleOutlined />,
   },
   { label: "Pedidos", to: "/orders", icon: <ReceiptLongOutlined /> },

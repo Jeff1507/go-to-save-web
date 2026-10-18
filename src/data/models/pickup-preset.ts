@@ -1,4 +1,4 @@
-export type PickupWindow = {
+export type PickupPreset = {
   id: string;
   name: string;
   start: string;

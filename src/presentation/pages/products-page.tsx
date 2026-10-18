@@ -31,8 +31,8 @@ import {
 } from "@mui/icons-material";
 import { useProducts } from "../../core/hooks/use-products";
 import type { Product } from "../../data/models/product";
-import CreateProductDialog from "../components/create-product-form";
-import EditProductDialog from "../components/edit-product-form";
+import CreateProductForm from "../components/create-product-form";
+import EditProductForm from "../components/edit-product-form";
 import DeleteProductDialog from "../components/delete-product-dialog";
 import { formatDate } from "../../utils/format-date";
 import { resolveMediaUrl } from "../../utils/resolve-media-url";
@@ -152,7 +152,7 @@ function ProductsPage() {
                         src={resolveMediaUrl(product.imageUrl) ?? undefined}
                         sx={{ width: 64, height: 64 }}
                       >
-                        <ImageOutlined />
+                        <ImageOutlined fontSize="small" />
                       </Avatar>
                     </TableCell>
                     <TableCell sx={{ fontWeight: 500 }}>
@@ -214,7 +214,7 @@ function ProductsPage() {
           }}
         >
           <ListItemIcon>
-            <EditOutlined />
+            <EditOutlined fontSize="small" />
           </ListItemIcon>
           <ListItemText primary="Editar" />
         </MenuItem>
@@ -225,17 +225,17 @@ function ProductsPage() {
           }}
         >
           <ListItemIcon>
-            <DeleteOutlined color="error" />
+            <DeleteOutlined fontSize="small" color="error" />
           </ListItemIcon>
           <ListItemText primary="Excluir" sx={{ color: "error.main" }} />
         </MenuItem>
       </Menu>
 
-      <CreateProductDialog
+      <CreateProductForm
         open={createOpen}
         onClose={() => setCreateOpen(false)}
       />
-      <EditProductDialog
+      <EditProductForm
         open={editOpen}
         product={editingProduct}
         onClose={() => setEditOpen(false)}

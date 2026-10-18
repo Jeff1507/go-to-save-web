@@ -7,21 +7,21 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import type { PickupWindow } from "../../data/models/pickup-window";
-import { useDeletePickupWindow } from "../../core/hooks/use-pickup-windows";
+import type { PickupPreset } from "../../data/models/pickup-preset";
+import { useDeletePickupPreset } from "../../core/hooks/use-pickup-presets";
 
-interface DeletePickupWindowDialogProps {
+interface DeletePickupPresetDialogProps {
   open: boolean;
-  pickupWindow: PickupWindow | null;
+  PickupPreset: PickupPreset | null;
   onClose: () => void;
 }
 
-function DeletePickupWindowDialog({
+function DeletePickupPresetDialog({
   open,
-  pickupWindow,
+  PickupPreset,
   onClose,
-}: DeletePickupWindowDialogProps) {
-  const { mutate: remove, isPending } = useDeletePickupWindow();
+}: DeletePickupPresetDialogProps) {
+  const { mutate: remove, isPending } = useDeletePickupPreset();
 
   return (
     <Dialog
@@ -34,7 +34,7 @@ function DeletePickupWindowDialog({
 
       <DialogContent>
         <DialogContentText>
-          Tem certeza que deseja excluir <strong>{pickupWindow?.name}</strong>?
+          Tem certeza que deseja excluir <strong>{PickupPreset?.name}</strong>?
           Essa ação não pode ser desfeita.
         </DialogContentText>
       </DialogContent>
@@ -48,7 +48,7 @@ function DeletePickupWindowDialog({
           variant="contained"
           disabled={isPending}
           onClick={() =>
-            pickupWindow && remove(pickupWindow.id, { onSuccess: onClose })
+            PickupPreset && remove(PickupPreset.id, { onSuccess: onClose })
           }
         >
           {isPending ? (
@@ -62,4 +62,4 @@ function DeletePickupWindowDialog({
   );
 }
 
-export default DeletePickupWindowDialog;
+export default DeletePickupPresetDialog;

@@ -27,32 +27,32 @@ import {
   EditOutlined,
   MoreVertOutlined,
 } from "@mui/icons-material";
-import { usePickupWindows } from "../../core/hooks/use-pickup-windows";
-import type { PickupWindow } from "../../data/models/pickup-window";
-import CreatePickupWindowDialog from "../components/create-pickup-window-form";
-import EditPickupWindowDialog from "../components/edit-pickup-window-form";
-import DeletePickupWindowDialog from "../components/delete-pickup-window-dialog";
+import { usePickupPresets } from "../../core/hooks/use-pickup-presets";
+import type { PickupPreset } from "../../data/models/pickup-preset";
+import CreatePickupPresetForm from "../components/create-pickup-preset-form";
+import EditPickupPresetForm from "../components/edit-pickup-preset-form";
+import DeletePickupPresetDialog from "../components/delete-pickup-preset-dialog";
 import AppLayout from "../components/app-layout";
 
 const ROWS_PER_PAGE = 5;
 const ROW_HEIGHT = 73;
 
-function PickupWindowsPage() {
-  const { pickupWindows, isPending, isError, refetch } = usePickupWindows();
+function PickupPresetsPage() {
+  const { presets, isPending, isError, refetch } = usePickupPresets();
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [editingWindow, setEditingWindow] = useState<PickupWindow | null>(null);
+  const [editingPreset, setEditingPreset] = useState<PickupPreset | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [deletingWindow, setDeletingWindow] = useState<PickupWindow | null>(
+  const [deletingPreset, setDeletingPreset] = useState<PickupPreset | null>(
     null,
   );
 
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
-  const [menuWindow, setMenuWindow] = useState<PickupWindow | null>(null);
+  const [menuPreset, setMenuPreset] = useState<PickupPreset | null>(null);
 
   const [page, setPage] = useState(0);
 
-  const rows = pickupWindows ?? [];
+  const rows = presets ?? [];
   const lastPage = Math.max(0, Math.ceil(rows.length / ROWS_PER_PAGE) - 1);
   const currentPage = Math.min(page, lastPage);
   const visibleRows = rows.slice(
@@ -66,22 +66,22 @@ function PickupWindowsPage() {
 
   const openCreate = () => setCreateOpen(true);
 
-  const openEdit = (pickupWindow: PickupWindow) => {
-    setEditingWindow(pickupWindow);
+  const openEdit = (pickupPreset: PickupPreset) => {
+    setEditingPreset(pickupPreset);
     setEditOpen(true);
   };
 
-  const openDelete = (pickupWindow: PickupWindow) => {
-    setDeletingWindow(pickupWindow);
+  const openDelete = (pickupPreset: PickupPreset) => {
+    setDeletingPreset(pickupPreset);
     setDeleteOpen(true);
   };
 
   const openMenu = (
     event: React.MouseEvent<HTMLElement>,
-    pickupWindow: PickupWindow,
+    pickupPreset: PickupPreset,
   ) => {
     setMenuAnchor(event.currentTarget);
-    setMenuWindow(pickupWindow);
+    setMenuPreset(pickupPreset);
   };
 
   const closeMenu = () => setMenuAnchor(null);
@@ -125,7 +125,7 @@ function PickupWindowsPage() {
           </Alert>
         )}
 
-        {pickupWindows && pickupWindows.length === 0 && (
+        {presets && presets.length === 0 && (
           <Paper variant="outlined" sx={{ p: 6, textAlign: "center" }}>
             <Typography sx={{ color: "text.secondary" }}>
               Você ainda não cadastrou nenhuma janela de retirada.
@@ -133,7 +133,7 @@ function PickupWindowsPage() {
           </Paper>
         )}
 
-        {pickupWindows && pickupWindows.length > 0 && (
+        {presets && presets.length > 0 && (
           <TableContainer component={Paper} variant="outlined">
             <Table>
               <TableHead>
@@ -144,19 +144,19 @@ function PickupWindowsPage() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {visibleRows.map((pickupWindow) => (
-                  <TableRow key={pickupWindow.id} hover>
+                {visibleRows.map((PickupPreset) => (
+                  <TableRow key={PickupPreset.id} hover>
                     <TableCell sx={{ fontWeight: 500 }}>
-                      {pickupWindow.name}
+                      {PickupPreset.name}
                     </TableCell>
                     <TableCell sx={{ color: "text.secondary" }}>
-                      {`${pickupWindow.start} — ${pickupWindow.end}`}
+                      {`${PickupPreset.start} — ${PickupPreset.end}`}
                     </TableCell>
                     <TableCell align="right">
                       <IconButton
-                        aria-label={`Ações para ${pickupWindow.name}`}
+                        aria-label={`Ações para ${PickupPreset.name}`}
                         aria-haspopup="menu"
-                        onClick={(event) => openMenu(event, pickupWindow)}
+                        onClick={(event) => openMenu(event, PickupPreset)}
                       >
                         <MoreVertOutlined />
                       </IconButton>
@@ -200,7 +200,7 @@ function PickupWindowsPage() {
       >
         <MenuItem
           onClick={() => {
-            if (menuWindow) openEdit(menuWindow);
+            if (menuPreset) openEdit(menuPreset);
             closeMenu();
           }}
         >
@@ -211,7 +211,7 @@ function PickupWindowsPage() {
         </MenuItem>
         <MenuItem
           onClick={() => {
-            if (menuWindow) openDelete(menuWindow);
+            if (menuPreset) openDelete(menuPreset);
             closeMenu();
           }}
         >
@@ -222,22 +222,22 @@ function PickupWindowsPage() {
         </MenuItem>
       </Menu>
 
-      <CreatePickupWindowDialog
+      <CreatePickupPresetForm
         open={createOpen}
         onClose={() => setCreateOpen(false)}
       />
-      <EditPickupWindowDialog
+      <EditPickupPresetForm
         open={editOpen}
-        pickupWindow={editingWindow}
+        PickupPreset={editingPreset}
         onClose={() => setEditOpen(false)}
       />
-      <DeletePickupWindowDialog
+      <DeletePickupPresetDialog
         open={deleteOpen}
-        pickupWindow={deletingWindow}
+        PickupPreset={deletingPreset}
         onClose={() => setDeleteOpen(false)}
       />
     </AppLayout>
   );
 }
 
-export default PickupWindowsPage;
+export default PickupPresetsPage;

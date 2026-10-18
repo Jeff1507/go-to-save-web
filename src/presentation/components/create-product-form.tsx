@@ -18,14 +18,14 @@ import {
 import { useCreateProduct } from "../../core/hooks/use-products";
 import ImageField from "./image-field";
 
-interface CreateProductDialogProps {
+interface CreateProductFormProps {
   open: boolean;
   onClose: () => void;
 }
 
 const emptyValues: CreateProductPayload = { name: "", image: null };
 
-function CreateProductDialog({ open, onClose }: CreateProductDialogProps) {
+function CreateProductForm({ open, onClose }: CreateProductFormProps) {
   const {
     register,
     control,
@@ -106,4 +106,4 @@ function CreateProductDialog({ open, onClose }: CreateProductDialogProps) {
   );
 }
 
-export default CreateProductDialog;
+export default CreateProductForm;

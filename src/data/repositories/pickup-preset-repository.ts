@@ -1,12 +1,12 @@
 import { api } from "../../core/lib/api";
-import type { PickupWindow } from "../models/pickup-window";
+import type { PickupPreset } from "../models/pickup-preset";
 
-export async function listPickupWindows() {
-  const windows = await api.get("pickup-presets").json<PickupWindow[]>();
-  return windows;
+export async function listPickupPresets() {
+  const presets = await api.get("pickup-presets").json<PickupPreset[]>();
+  return presets;
 }
 
-export async function createPickupWindow(data: {
+export async function createPickupPreset(data: {
   name: string;
   start: string;
   end: string;
@@ -14,7 +14,7 @@ export async function createPickupWindow(data: {
   await api.post("pickup-presets", { json: data });
 }
 
-export async function updatePickupWindow({
+export async function updatePickupPreset({
   id,
   ...data
 }: {
@@ -26,6 +26,6 @@ export async function updatePickupWindow({
   await api.put(`pickup-presets/${id}`, { json: data });
 }
 
-export async function deletePickupWindow(id: string) {
+export async function deletePickupPreset(id: string) {
   await api.delete(`pickup-presets/${id}`);
 }

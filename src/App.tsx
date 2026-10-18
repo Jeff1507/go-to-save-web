@@ -9,7 +9,7 @@ import ForgotPasswordPage from "./presentation/pages/forgot-password-page";
 import ResetPasswordPage from "./presentation/pages/reset-password-page";
 import BagsPage from "./presentation/pages/bags-page";
 import ProductsPage from "./presentation/pages/products-page";
-import PickupWindowsPage from "./presentation/pages/pickup-windows-page";
+import PickupPresetsPage from "./presentation/pages/pickup-presets-page";
 import OrdersPage from "./presentation/pages/orders-page";
 
 function App() {
@@ -29,7 +29,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/bags" element={<BagsPage />} />
           <Route path="/products" element={<ProductsPage />} />
-          <Route path="/pickup-windows" element={<PickupWindowsPage />} />
+          <Route path="/pickup-presets" element={<PickupPresetsPage />} />
           <Route path="/orders" element={<OrdersPage />} />
         </Route>
       </Routes>

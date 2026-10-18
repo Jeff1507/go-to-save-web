@@ -11,53 +11,53 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import type { PickupWindow } from "../../data/models/pickup-window";
+import type { PickupPreset } from "../../data/models/pickup-preset";
 import {
-  updatePickupWindowSchema,
-  type UpdatePickupWindowPayload,
-} from "../payloads/pickup-window-payloads";
-import { useUpdatePickupWindow } from "../../core/hooks/use-pickup-windows";
+  updatePickupPresetSchema,
+  type UpdatePickupPresetPayload,
+} from "../payloads/pickup-preset-payloads";
+import { useUpdatePickupPreset } from "../../core/hooks/use-pickup-presets";
 
-interface EditPickupWindowDialogProps {
+interface EditPickupPresetFormProps {
   open: boolean;
-  pickupWindow: PickupWindow | null;
+  PickupPreset: PickupPreset | null;
   onClose: () => void;
 }
 
 function toFormValues(
-  pickupWindow: PickupWindow | null,
-): UpdatePickupWindowPayload {
+  PickupPreset: PickupPreset | null,
+): UpdatePickupPresetPayload {
   return {
-    name: pickupWindow?.name ?? "",
-    start: pickupWindow?.start ?? "",
-    end: pickupWindow?.end ?? "",
+    name: PickupPreset?.name ?? "",
+    start: PickupPreset?.start ?? "",
+    end: PickupPreset?.end ?? "",
   };
 }
 
-function EditPickupWindowDialog({
+function EditPickupPresetForm({
   open,
-  pickupWindow,
+  PickupPreset,
   onClose,
-}: EditPickupWindowDialogProps) {
+}: EditPickupPresetFormProps) {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<UpdatePickupWindowPayload>({
-    resolver: zodResolver(updatePickupWindowSchema),
-    defaultValues: toFormValues(pickupWindow),
+  } = useForm<UpdatePickupPresetPayload>({
+    resolver: zodResolver(updatePickupPresetSchema),
+    defaultValues: toFormValues(PickupPreset),
   });
 
-  const { mutate: update, isPending } = useUpdatePickupWindow();
+  const { mutate: update, isPending } = useUpdatePickupPreset();
 
   useEffect(() => {
-    if (open) reset(toFormValues(pickupWindow));
-  }, [open, pickupWindow, reset]);
+    if (open) reset(toFormValues(PickupPreset));
+  }, [open, PickupPreset, reset]);
 
-  const onSubmit = (data: UpdatePickupWindowPayload) => {
-    if (!pickupWindow) return;
-    update({ id: pickupWindow.id, ...data }, { onSuccess: onClose });
+  const onSubmit = (data: UpdatePickupPresetPayload) => {
+    if (!PickupPreset) return;
+    update({ id: PickupPreset.id, ...data }, { onSuccess: onClose });
   };
 
   return (
@@ -124,4 +124,4 @@ function EditPickupWindowDialog({
   );
 }
 
-export default EditPickupWindowDialog;
+export default EditPickupPresetForm;

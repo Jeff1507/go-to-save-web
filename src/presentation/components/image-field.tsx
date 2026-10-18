@@ -63,7 +63,7 @@ function ImageField({
         src={preview ?? undefined}
         sx={{ width: 96, height: 96 }}
       >
-        <ImageOutlined sx={{ fontSize: 32 }} />
+        <ImageOutlined fontSize="large" />
       </Avatar>
 
       <Stack spacing={1} sx={{ alignItems: "flex-start", minWidth: 0 }}>

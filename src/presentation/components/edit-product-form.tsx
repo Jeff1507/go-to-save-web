@@ -20,7 +20,7 @@ import { useUpdateProduct } from "../../core/hooks/use-products";
 import ImageField from "./image-field";
 import { resolveMediaUrl } from "../../utils/resolve-media-url";
 
-interface EditProductDialogProps {
+interface EditProductFormProps {
   open: boolean;
   product: Product | null;
   onClose: () => void;
@@ -34,7 +34,7 @@ function toFormValues(product: Product | null): UpdateProductPayload {
   };
 }
 
-function EditProductDialog({ open, product, onClose }: EditProductDialogProps) {
+function EditProductForm({ open, product, onClose }: EditProductFormProps) {
   const {
     register,
     control,
@@ -123,4 +123,4 @@ function EditProductDialog({ open, product, onClose }: EditProductDialogProps) {
   );
 }
 
-export default EditProductDialog;
+export default EditProductForm;

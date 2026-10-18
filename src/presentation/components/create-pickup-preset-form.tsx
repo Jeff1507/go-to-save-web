@@ -12,39 +12,39 @@ import {
   TextField,
 } from "@mui/material";
 import {
-  createPickupWindowSchema,
-  type CreatePickupWindowPayload,
-} from "../payloads/pickup-window-payloads";
-import { useCreatePickupWindow } from "../../core/hooks/use-pickup-windows";
+  createPickupPresetSchema,
+  type CreatePickupPresetPayload,
+} from "../payloads/pickup-preset-payloads";
+import { useCreatePickupPreset } from "../../core/hooks/use-pickup-presets";
 
-interface CreatePickupWindowDialogProps {
+interface CreatePickupPresetFormProps {
   open: boolean;
   onClose: () => void;
 }
 
-const emptyValues: CreatePickupWindowPayload = { name: "", start: "", end: "" };
+const emptyValues: CreatePickupPresetPayload = { name: "", start: "", end: "" };
 
-function CreatePickupWindowDialog({
+function CreatePickupPresetForm({
   open,
   onClose,
-}: CreatePickupWindowDialogProps) {
+}: CreatePickupPresetFormProps) {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<CreatePickupWindowPayload>({
-    resolver: zodResolver(createPickupWindowSchema),
+  } = useForm<CreatePickupPresetPayload>({
+    resolver: zodResolver(createPickupPresetSchema),
     defaultValues: emptyValues,
   });
 
-  const { mutate: create, isPending } = useCreatePickupWindow();
+  const { mutate: create, isPending } = useCreatePickupPreset();
 
   useEffect(() => {
     if (open) reset(emptyValues);
   }, [open, reset]);
 
-  const onSubmit = (data: CreatePickupWindowPayload) => {
+  const onSubmit = (data: CreatePickupPresetPayload) => {
     create(data, { onSuccess: onClose });
   };
 
@@ -112,4 +112,4 @@ function CreatePickupWindowDialog({
   );
 }
 
-export default CreatePickupWindowDialog;
+export default CreatePickupPresetForm;

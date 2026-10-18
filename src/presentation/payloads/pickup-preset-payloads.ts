@@ -15,22 +15,22 @@ const endSchema = z
   .string()
   .regex(timeRegex, "O horário da janela deve estar no formato HH:MM");
 
-export const createPickupWindowSchema = z.object({
+export const createPickupPresetSchema = z.object({
   name: nameSchema,
   start: startSchema,
   end: endSchema,
 });
 
-export type CreatePickupWindowPayload = z.infer<
-  typeof createPickupWindowSchema
+export type CreatePickupPresetPayload = z.infer<
+  typeof createPickupPresetSchema
 >;
 
-export const updatePickupWindowSchema = z.object({
+export const updatePickupPresetSchema = z.object({
   name: nameSchema,
   start: startSchema,
   end: endSchema,
 });
 
-export type UpdatePickupWindowPayload = z.infer<
-  typeof updatePickupWindowSchema
+export type UpdatePickupPresetPayload = z.infer<
+  typeof updatePickupPresetSchema
 >;
