@@ -32,6 +32,7 @@ import type { PickupPreset } from "../../data/models/pickup-preset";
 import CreatePickupPresetForm from "../components/create-pickup-preset-form";
 import EditPickupPresetForm from "../components/edit-pickup-preset-form";
 import DeletePickupPresetDialog from "../components/delete-pickup-preset-dialog";
+import { formatTimeRange } from "../../utils/format-time";
 import AppLayout from "../components/app-layout";
 
 const ROWS_PER_PAGE = 5;
@@ -66,22 +67,22 @@ function PickupPresetsPage() {
 
   const openCreate = () => setCreateOpen(true);
 
-  const openEdit = (pickupPreset: PickupPreset) => {
-    setEditingPreset(pickupPreset);
+  const openEdit = (preset: PickupPreset) => {
+    setEditingPreset(preset);
     setEditOpen(true);
   };
 
-  const openDelete = (pickupPreset: PickupPreset) => {
-    setDeletingPreset(pickupPreset);
+  const openDelete = (preset: PickupPreset) => {
+    setDeletingPreset(preset);
     setDeleteOpen(true);
   };
 
   const openMenu = (
     event: React.MouseEvent<HTMLElement>,
-    pickupPreset: PickupPreset,
+    preset: PickupPreset,
   ) => {
     setMenuAnchor(event.currentTarget);
-    setMenuPreset(pickupPreset);
+    setMenuPreset(preset);
   };
 
   const closeMenu = () => setMenuAnchor(null);
@@ -144,19 +145,21 @@ function PickupPresetsPage() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {visibleRows.map((PickupPreset) => (
-                  <TableRow key={PickupPreset.id} hover>
+                {visibleRows.map((preset) => (
+                  <TableRow key={preset.id} hover>
                     <TableCell sx={{ fontWeight: 500 }}>
-                      {PickupPreset.name}
+                      {preset.name}
                     </TableCell>
-                    <TableCell sx={{ color: "text.secondary" }}>
-                      {`${PickupPreset.start} — ${PickupPreset.end}`}
+                    <TableCell
+                      sx={{ color: "text.secondary", whiteSpace: "nowrap" }}
+                    >
+                      {formatTimeRange(preset.start, preset.end)}
                     </TableCell>
                     <TableCell align="right">
                       <IconButton
-                        aria-label={`Ações para ${PickupPreset.name}`}
+                        aria-label={`Ações para ${preset.name}`}
                         aria-haspopup="menu"
-                        onClick={(event) => openMenu(event, PickupPreset)}
+                        onClick={(event) => openMenu(event, preset)}
                       >
                         <MoreVertOutlined />
                       </IconButton>
@@ -228,12 +231,12 @@ function PickupPresetsPage() {
       />
       <EditPickupPresetForm
         open={editOpen}
-        PickupPreset={editingPreset}
+        preset={editingPreset}
         onClose={() => setEditOpen(false)}
       />
       <DeletePickupPresetDialog
         open={deleteOpen}
-        PickupPreset={deletingPreset}
+        preset={deletingPreset}
         onClose={() => setDeleteOpen(false)}
       />
     </AppLayout>

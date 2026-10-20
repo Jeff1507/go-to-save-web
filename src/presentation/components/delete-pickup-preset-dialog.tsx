@@ -12,13 +12,13 @@ import { useDeletePickupPreset } from "../../core/hooks/use-pickup-presets";
 
 interface DeletePickupPresetDialogProps {
   open: boolean;
-  PickupPreset: PickupPreset | null;
+  preset: PickupPreset | null;
   onClose: () => void;
 }
 
 function DeletePickupPresetDialog({
   open,
-  PickupPreset,
+  preset,
   onClose,
 }: DeletePickupPresetDialogProps) {
   const { mutate: remove, isPending } = useDeletePickupPreset();
@@ -34,8 +34,8 @@ function DeletePickupPresetDialog({
 
       <DialogContent>
         <DialogContentText>
-          Tem certeza que deseja excluir <strong>{PickupPreset?.name}</strong>?
-          Essa ação não pode ser desfeita.
+          Tem certeza que deseja excluir <strong>{preset?.name}</strong>? Essa
+          ação não pode ser desfeita.
         </DialogContentText>
       </DialogContent>
 
@@ -47,9 +47,7 @@ function DeletePickupPresetDialog({
           color="error"
           variant="contained"
           disabled={isPending}
-          onClick={() =>
-            PickupPreset && remove(PickupPreset.id, { onSuccess: onClose })
-          }
+          onClick={() => preset && remove(preset.id, { onSuccess: onClose })}
         >
           {isPending ? (
             <CircularProgress size={22} color="inherit" />

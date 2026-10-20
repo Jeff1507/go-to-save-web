@@ -20,23 +20,21 @@ import { useUpdatePickupPreset } from "../../core/hooks/use-pickup-presets";
 
 interface EditPickupPresetFormProps {
   open: boolean;
-  PickupPreset: PickupPreset | null;
+  preset: PickupPreset | null;
   onClose: () => void;
 }
 
-function toFormValues(
-  PickupPreset: PickupPreset | null,
-): UpdatePickupPresetPayload {
+function toFormValues(preset: PickupPreset | null): UpdatePickupPresetPayload {
   return {
-    name: PickupPreset?.name ?? "",
-    start: PickupPreset?.start ?? "",
-    end: PickupPreset?.end ?? "",
+    name: preset?.name ?? "",
+    start: preset?.start ?? "",
+    end: preset?.end ?? "",
   };
 }
 
 function EditPickupPresetForm({
   open,
-  PickupPreset,
+  preset,
   onClose,
 }: EditPickupPresetFormProps) {
   const {
@@ -46,18 +44,18 @@ function EditPickupPresetForm({
     formState: { errors },
   } = useForm<UpdatePickupPresetPayload>({
     resolver: zodResolver(updatePickupPresetSchema),
-    defaultValues: toFormValues(PickupPreset),
+    defaultValues: toFormValues(preset),
   });
 
   const { mutate: update, isPending } = useUpdatePickupPreset();
 
   useEffect(() => {
-    if (open) reset(toFormValues(PickupPreset));
-  }, [open, PickupPreset, reset]);
+    if (open) reset(toFormValues(preset));
+  }, [open, preset, reset]);
 
   const onSubmit = (data: UpdatePickupPresetPayload) => {
-    if (!PickupPreset) return;
-    update({ id: PickupPreset.id, ...data }, { onSuccess: onClose });
+    if (!preset) return;
+    update({ id: preset.id, ...data }, { onSuccess: onClose });
   };
 
   return (
