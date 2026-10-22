@@ -26,6 +26,7 @@ import {
 import {
   AddOutlined,
   EditOutlined,
+  Inventory2Outlined,
   LockOutlined,
   MoreVertOutlined,
   VisibilityOutlined,
@@ -37,6 +38,9 @@ import { formatPickupWindow } from "../../utils/format-pickup-window";
 import AppLayout from "../components/app-layout";
 import BagDetailsDialog from "../components/bag-details-dialog";
 import CreateBagForm from "../components/create-bag-form";
+import CloseBagDialog from "../components/close-bag-dialog";
+import EditBagForm from "../components/edit-bag-form";
+import UpdateBagStockForm from "../components/update-bag-stock-form";
 import BagStatusChip from "../components/bag-status-chip";
 
 const ROWS_PER_PAGE = 5;
@@ -49,6 +53,12 @@ function BagsPage() {
   const [menuBag, setMenuBag] = useState<BagSummary | null>(null);
 
   const [createOpen, setCreateOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editingBagId, setEditingBagId] = useState<string | null>(null);
+  const [stockOpen, setStockOpen] = useState(false);
+  const [stockBag, setStockBag] = useState<BagSummary | null>(null);
+  const [closeOpen, setCloseOpen] = useState(false);
+  const [closingBag, setClosingBag] = useState<BagSummary | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [detailsBagId, setDetailsBagId] = useState<string | null>(null);
 
@@ -69,6 +79,21 @@ function BagsPage() {
   const openDetails = (bag: BagSummary) => {
     setDetailsBagId(bag.id);
     setDetailsOpen(true);
+  };
+
+  const openEdit = (bag: BagSummary) => {
+    setEditingBagId(bag.id);
+    setEditOpen(true);
+  };
+
+  const openStock = (bag: BagSummary) => {
+    setStockBag(bag);
+    setStockOpen(true);
+  };
+
+  const openClose = (bag: BagSummary) => {
+    setClosingBag(bag);
+    setCloseOpen(true);
   };
 
   const openMenu = (event: React.MouseEvent<HTMLElement>, bag: BagSummary) => {
@@ -277,16 +302,40 @@ function BagsPage() {
           </ListItemIcon>
           <ListItemText primary="Ver" />
         </MenuItem>
-        <MenuItem disabled={isClosed} onClick={closeMenu /* TODO: editar */}>
+        <MenuItem
+          disabled={isClosed}
+          onClick={() => {
+            if (menuBag) openEdit(menuBag);
+            closeMenu();
+          }}
+        >
           <ListItemIcon>
             <EditOutlined fontSize="small" />
           </ListItemIcon>
           <ListItemText primary="Editar" />
         </MenuItem>
+        <MenuItem
+          disabled={isClosed}
+          onClick={() => {
+            if (menuBag) openStock(menuBag);
+            closeMenu();
+          }}
+        >
+          <ListItemIcon>
+            <Inventory2Outlined fontSize="small" />
+          </ListItemIcon>
+          <ListItemText primary="Ajustar estoque" />
+        </MenuItem>
 
         <Divider />
 
-        <MenuItem disabled={isClosed} onClick={closeMenu /* TODO: fechar */}>
+        <MenuItem
+          disabled={isClosed}
+          onClick={() => {
+            if (menuBag) openClose(menuBag);
+            closeMenu();
+          }}
+        >
           <ListItemIcon>
             <LockOutlined
               fontSize="small"
@@ -301,6 +350,21 @@ function BagsPage() {
       </Menu>
 
       <CreateBagForm open={createOpen} onClose={() => setCreateOpen(false)} />
+      <EditBagForm
+        open={editOpen}
+        bagId={editingBagId}
+        onClose={() => setEditOpen(false)}
+      />
+      <UpdateBagStockForm
+        open={stockOpen}
+        bag={stockBag}
+        onClose={() => setStockOpen(false)}
+      />
+      <CloseBagDialog
+        open={closeOpen}
+        bag={closingBag}
+        onClose={() => setCloseOpen(false)}
+      />
       <BagDetailsDialog
         open={detailsOpen}
         bagId={detailsBagId}

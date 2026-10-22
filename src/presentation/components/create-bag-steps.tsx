@@ -58,7 +58,12 @@ interface StepProps {
   errors: FieldErrors<CreateBagPayload>;
 }
 
-export function InfoStep({ register, control, errors }: StepProps) {
+export function InfoStep({
+  register,
+  control,
+  errors,
+  showStock = true,
+}: StepProps & { showStock?: boolean }) {
   const [originalPrice, discount] = useWatch({
     control,
     name: ["originalPrice", "discount"],
@@ -98,16 +103,21 @@ export function InfoStep({ register, control, errors }: StepProps) {
         sx={{
           display: "grid",
           gap: 2,
-          gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr 1fr" },
+          gridTemplateColumns: {
+            xs: "1fr",
+            sm: showStock ? "1fr 1fr 1fr" : "1fr 1fr",
+          },
         }}
       >
-        <TextField
-          {...register("stock")}
-          label="Estoque"
-          slotProps={{ htmlInput: { inputMode: "numeric" } }}
-          error={!!errors.stock}
-          helperText={errors.stock?.message}
-        />
+        {showStock && (
+          <TextField
+            {...register("stock")}
+            label="Estoque"
+            slotProps={{ htmlInput: { inputMode: "numeric" } }}
+            error={!!errors.stock}
+            helperText={errors.stock?.message}
+          />
+        )}
         <TextField
           {...register("originalPrice")}
           label="Preço original"
@@ -138,6 +148,12 @@ export function InfoStep({ register, control, errors }: StepProps) {
           }
         />
       </Box>
+
+      {!showStock && (
+        <Typography variant="caption" sx={{ color: "text.secondary" }}>
+          Para alterar o estoque, use “Ajustar estoque” no menu da sacola.
+        </Typography>
+      )}
 
       {estimatedFinalPrice !== null && (
         <Typography variant="body2" sx={{ color: "text.secondary" }}>

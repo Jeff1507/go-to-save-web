@@ -37,7 +37,6 @@ export async function updateBag({
   id: string;
   title: string;
   description: string | null;
-  stock: number;
   originalPrice: number;
   discount: number;
   pickupWindow: {
@@ -59,7 +58,7 @@ export async function updateBagStock({
   id: string;
   delta: number;
 }) {
-  await api.patch(`bags/${id}`, { json: delta });
+  await api.patch(`bags/${id}/stock`, { json: { delta } });
 }
 
 export async function closeBag(id: string) {
