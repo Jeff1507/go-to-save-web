@@ -43,3 +43,11 @@ export async function resetPassword(data: {
 }) {
   await api.patch("reset-password", { json: data });
 }
+
+export async function requestEmailVerification(email: string) {
+  await api.post("email-verification", { json: { email } });
+}
+
+export async function verifyEmail(data: { email: string; code: string }) {
+  await api.patch("verify-email", { json: data });
+}

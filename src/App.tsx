@@ -11,6 +11,7 @@ import BagsPage from "./presentation/pages/bags-page";
 import ProductsPage from "./presentation/pages/products-page";
 import PickupPresetsPage from "./presentation/pages/pickup-presets-page";
 import OrdersPage from "./presentation/pages/orders-page";
+import ProfilePage from "./presentation/pages/profile-page";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         </Route>
 
         <Route element={<PrivateRoute />}>
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/" element={<HomePage />} />
           <Route path="/bags" element={<BagsPage />} />
           <Route path="/products" element={<ProductsPage />} />

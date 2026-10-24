@@ -148,18 +148,15 @@ function Navbar() {
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
   const open = Boolean(anchor);
 
-  const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
+  const handleOpen = (event: React.MouseEvent<HTMLElement>) =>
     setAnchor(event.currentTarget);
-  };
 
-  const handleClose = () => {
-    setAnchor(null);
-  };
+  const handleClose = () => setAnchor(null);
 
   return (
     <AppBar
       position="sticky"
-      elevation={0}
+      variant="outlined"
       sx={{
         bgcolor: "background.paper",
       }}

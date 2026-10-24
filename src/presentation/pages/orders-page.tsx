@@ -25,7 +25,6 @@ import { useFinishedOrders } from "../../core/hooks/use-orders";
 import type { OrderStatus } from "../../data/models/order-status";
 import { formatCurrency } from "../../utils/format-currency";
 import { formatOrderId } from "../../utils/format-order-id";
-import { formatPickupWindow } from "../../utils/format-pickup-window";
 import { resolveMediaUrl } from "../../utils/resolve-media-url";
 import AppLayout from "../components/app-layout";
 import OrderDetailsDialog from "../components/order-details-dialog";
@@ -163,7 +162,6 @@ function OrdersPage() {
                 <TableRow>
                   <TableCell>Cliente</TableCell>
                   <TableCell>Total (R$)</TableCell>
-                  <TableCell>Retirada</TableCell>
                   <TableCell>Status</TableCell>
                   <TableCell>Finalizado em</TableCell>
                   <TableCell align="right" />
@@ -171,8 +169,6 @@ function OrdersPage() {
               </TableHead>
               <TableBody>
                 {visibleRows.map((order) => {
-                  const pickup = formatPickupWindow(order.pickupWindow);
-
                   return (
                     <TableRow key={order.id} hover>
                       <TableCell>
@@ -209,16 +205,6 @@ function OrdersPage() {
 
                       <TableCell sx={{ whiteSpace: "nowrap", fontWeight: 500 }}>
                         {formatCurrency(order.totalPrice)}
-                      </TableCell>
-
-                      <TableCell sx={{ whiteSpace: "nowrap" }}>
-                        <Typography variant="body2">{pickup.day}</Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{ color: "text.secondary" }}
-                        >
-                          {pickup.range}
-                        </Typography>
                       </TableCell>
 
                       <TableCell>
