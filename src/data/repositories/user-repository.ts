@@ -35,7 +35,7 @@ export async function updateAddress(address: {
   latitude: number;
   longitude: number;
 }) {
-  await api.patch("me/address", { json: address });
+  await api.patch("me/address", { json: { address } });
 }
 
 export async function updateEmail(email: string) {

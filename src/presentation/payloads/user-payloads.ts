@@ -37,3 +37,36 @@ export const updateProfileSchema = z.object({
 });
 
 export type UpdateProfilePayload = z.infer<typeof updateProfileSchema>;
+
+export const createUpdateEmailSchema = (currentEmail: string) =>
+  z.object({
+    email: z
+      .email("Informe um e-mail válido.")
+      .trim()
+      .toLowerCase()
+      .refine(
+        (email) => email !== currentEmail.trim().toLowerCase(),
+        "Informe um e-mail diferente do atual.",
+      ),
+  });
+
+export type UpdateEmailPayload = z.infer<
+  ReturnType<typeof createUpdateEmailSchema>
+>;
+
+export const updatePasswordSchema = z
+  .object({
+    password: z.string().min(1, "Informe a senha atual."),
+    newPassword: z.string().min(8, "Use pelo menos 8 caracteres."),
+    confirmNewPassword: z.string().min(1, "Confirme a nova senha."),
+  })
+  .refine((data) => data.newPassword === data.confirmNewPassword, {
+    path: ["confirmNewPassword"],
+    message: "As senhas não conferem.",
+  })
+  .refine((data) => data.newPassword !== data.password, {
+    path: ["newPassword"],
+    message: "A nova senha deve ser diferente da atual.",
+  });
+
+export type UpdatePasswordPayload = z.infer<typeof updatePasswordSchema>;

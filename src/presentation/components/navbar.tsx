@@ -33,11 +33,11 @@ import {
 } from "@mui/icons-material";
 import { useRequireUser, userQueryKey } from "../../core/hooks/use-user";
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { logoutUser } from "../../data/repositories/auth-repository";
+import { useQueryClient } from "@tanstack/react-query";
 import { NavLink, useNavigate } from "react-router";
 import UserAvatar from "./user-avatar";
 import Logo from "./logo";
+import { useLogout } from "../../core/hooks/use-auth";
 
 const tabs = [
   { label: "Início", to: "/", icon: <HomeOutlined />, end: true },
@@ -137,13 +137,24 @@ function Navbar() {
   });
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const { mutate: logout } = useMutation({
-    mutationFn: logoutUser,
-    onSuccess: () => {
-      navigate("/login", { replace: true });
-      queryClient.removeQueries({ queryKey: userQueryKey });
-    },
-  });
+  // const { mutate: logout } = useMutation({
+  //   mutationFn: logoutUser,
+  //   onSuccess: () => {
+  //     navigate("/login", { replace: true });
+  //     queryClient.removeQueries({ queryKey: userQueryKey });
+  //   },
+  // });
+
+  const { mutate: logout } = useLogout();
+
+  const onLogout = () => {
+    logout(undefined, {
+      onSuccess: () => {
+        navigate("/login", { replace: true });
+        queryClient.removeQueries({ queryKey: userQueryKey });
+      },
+    });
+  };
 
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
   const open = Boolean(anchor);
@@ -232,7 +243,7 @@ function Navbar() {
 
               <MenuItem
                 onClick={() => {
-                  logout();
+                  onLogout();
                   handleClose();
                 }}
               >

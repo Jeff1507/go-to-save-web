@@ -12,6 +12,7 @@ import ProductsPage from "./presentation/pages/products-page";
 import PickupPresetsPage from "./presentation/pages/pickup-presets-page";
 import OrdersPage from "./presentation/pages/orders-page";
 import ProfilePage from "./presentation/pages/profile-page";
+import VerifyEmailPage from "./presentation/pages/verify-email-page";
 
 function App() {
   return (
@@ -25,6 +26,8 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
         </Route>
+
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
 
         <Route element={<PrivateRoute />}>
           <Route path="/profile" element={<ProfilePage />} />

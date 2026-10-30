@@ -1,17 +1,7 @@
-import { useNavigate, useSearchParams } from "react-router";
-import { useToast } from "../../core/hooks/use-toast";
-import { useForm } from "react-hook-form";
-import {
-  resetPasswordSchema,
-  type ResetPasswordPayload,
-} from "../payloads/auth-payloads";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import {
-  requestPasswordReset,
-  resetPassword,
-} from "../../data/repositories/auth-repository";
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate, useSearchParams } from "react-router";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Box,
   Button,
@@ -21,11 +11,21 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import {
+  useRequestPasswordReset,
+  useResetPassword,
+} from "../../core/hooks/use-auth";
+import {
+  resetPasswordSchema,
+  type ResetPasswordPayload,
+} from "../payloads/auth-payloads";
+
+const RESEND_COOLDOWN_SECONDS = 60;
 
 function ResetPasswordPage() {
-  const toast = useToast();
   const [searchParams] = useSearchParams();
   const email = searchParams.get("email");
+  const location = useLocation();
   const navigate = useNavigate();
 
   const {
@@ -42,47 +42,21 @@ function ResetPasswordPage() {
     },
   });
 
-  const { mutate: reset, isPending } = useMutation({
-    mutationFn: resetPassword,
-    onSuccess: () => {
-      toast.show("Senha alterada com sucesso");
-      navigate("/login");
-    },
-    onError: (error) => {
-      toast.show(error.message, "error");
-    },
-  });
+  const { mutate: resetPassword, isPending } = useResetPassword();
+  const { mutate: resend, isPending: isResending } = useRequestPasswordReset();
 
-  const [resendCooldown, setResendCooldown] = useState(0);
+  const codeJustSent = (location.state as { codeSent?: boolean } | null)
+    ?.codeSent;
+  const [resendCooldown, setResendCooldown] = useState(
+    codeJustSent ? RESEND_COOLDOWN_SECONDS : 0,
+  );
+
   useEffect(() => {
-    if (resendCooldown === 0) {
-      return;
-    }
+    if (resendCooldown === 0) return;
 
-    const timer = setTimeout(() => {
-      setResendCooldown((seconds) => seconds - 1);
-    }, 1000);
-
+    const timer = setTimeout(() => setResendCooldown((s) => s - 1), 1000);
     return () => clearTimeout(timer);
   }, [resendCooldown]);
-
-  const { mutate: resend, isPending: isResending } = useMutation({
-    mutationFn: requestPasswordReset,
-    onSuccess: () => {
-      toast.show("Código enviado com sucesso");
-      setResendCooldown(60);
-    },
-    onError: (error) => {
-      toast.show(error.message, "error");
-    },
-  });
-
-  const onResend = () => resend({ email: email ?? "" });
-
-  const onSubmit = (data: ResetPasswordPayload) => {
-    const { confirmNewPassword, ...payload } = data;
-    reset(payload);
-  };
 
   if (!email)
     return (
@@ -100,8 +74,19 @@ function ResetPasswordPage() {
           <Button onClick={() => navigate("/forgot-password")}>
             Solicitar código
           </Button>
-        </Stack>{" "}
+        </Stack>
       </Box>
+    );
+
+  const onSubmit = handleSubmit((data) => {
+    const { confirmNewPassword, ...payload } = data;
+    resetPassword(payload, { onSuccess: () => navigate("/login") });
+  });
+
+  const onResend = () =>
+    resend(
+      { email },
+      { onSuccess: () => setResendCooldown(RESEND_COOLDOWN_SECONDS) },
     );
 
   return (
@@ -129,12 +114,7 @@ function ResetPasswordPage() {
           </Typography>
         </Stack>
 
-        <Stack
-          component="form"
-          noValidate
-          spacing={3}
-          onSubmit={handleSubmit(onSubmit)}
-        >
+        <Stack component="form" noValidate spacing={3} onSubmit={onSubmit}>
           <Stack spacing={2}>
             <Stack spacing={0.5}>
               <TextField
@@ -157,6 +137,7 @@ function ResetPasswordPage() {
                   Não recebeu o código?
                 </Typography>
                 <Button
+                  size="small"
                   onClick={onResend}
                   disabled={isResending || resendCooldown > 0}
                 >

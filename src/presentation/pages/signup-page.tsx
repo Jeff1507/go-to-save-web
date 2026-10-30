@@ -10,9 +10,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import { signupUser } from "../../data/repositories/auth-repository";
 import Logo from "../components/logo";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,7 +18,7 @@ import { signupSchema, type SignupPayload } from "../payloads/auth-payloads";
 import type { AddressPayload } from "../payloads/user-payloads";
 import { onlyDigits } from "../../utils/cnpj";
 import AddressLocationForm from "../components/address-location-form";
-import { useToast } from "../../core/hooks/use-toast";
+import { useSignup } from "../../core/hooks/use-auth";
 
 const steps = ["Dados da loja", "Endereço", "Revisão"];
 const LAST_STEP = steps.length - 1;
@@ -57,7 +55,6 @@ function ReviewRow({ label, value }: { label: string; value: string }) {
 }
 
 function SignupPage() {
-  const toast = useToast();
   const [activeStep, setActiveStep] = useState(0);
   const [addressData, setAddressData] = useState<AddressPayload | null>(null);
   const {
@@ -76,15 +73,7 @@ function SignupPage() {
       confirmPassword: "",
     },
   });
-  const { mutate: signup, isPending } = useMutation({
-    mutationFn: signupUser,
-    onSuccess: () => {
-      toast.show("Conta criada com sucesso!");
-    },
-    onError: (error) => {
-      toast.show(error.message, "error");
-    },
-  });
+  const { mutate: signup, isPending } = useSignup();
 
   const handleBack = () => setActiveStep((step) => step - 1);
 

@@ -1,11 +1,7 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useToast } from "../../core/hooks/use-toast";
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { loginSchema, type LoginPayload } from "../payloads/auth-payloads";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginUser } from "../../data/repositories/auth-repository";
-import { userQueryKey } from "../../core/hooks/use-user";
 import {
   Box,
   Button,
@@ -17,10 +13,9 @@ import {
   Typography,
 } from "@mui/material";
 import Logo from "../components/logo";
+import { useLogin } from "../../core/hooks/use-auth";
 
 function LoginPage() {
-  const toast = useToast();
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   const {
@@ -35,16 +30,7 @@ function LoginPage() {
     },
   });
 
-  const { mutate: login, isPending } = useMutation({
-    mutationFn: loginUser,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: userQueryKey });
-      toast.show("Bem vindo de volta");
-    },
-    onError: (error) => {
-      toast.show(error.message, "error");
-    },
-  });
+  const { mutate: login, isPending } = useLogin();
 
   const onSubmit = (data: LoginPayload) => login(data);
 

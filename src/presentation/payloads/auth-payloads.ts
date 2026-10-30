@@ -55,3 +55,12 @@ export const resetPasswordSchema = z
   });
 
 export type ResetPasswordPayload = z.infer<typeof resetPasswordSchema>;
+
+export const verifyEmailSchema = z.object({
+  code: z
+    .string()
+    .trim()
+    .regex(/^\d{6}$/, "O código deve ter 6 dígitos."),
+});
+
+export type VerifyEmailPayload = z.infer<typeof verifyEmailSchema>;

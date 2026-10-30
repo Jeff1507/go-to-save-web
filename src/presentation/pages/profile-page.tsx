@@ -3,6 +3,7 @@ import {
   Alert,
   Box,
   Button,
+  CircularProgress,
   Link,
   Paper,
   Rating,
@@ -26,6 +27,11 @@ import type { User } from "../../data/models/user";
 import { formatCep, formatCnpj } from "../../utils/format-document";
 import EditableAvatar from "../components/editable-avatar";
 import EditProfileForm from "../components/edit-profile-form";
+import EditAddressForm from "../components/edit-address-form";
+import { useNavigate } from "react-router";
+import { useRequestEmailVerification } from "../../core/hooks/use-auth";
+import EditEmailForm from "../components/edit-email-form";
+import EditPasswordForm from "../components/edit-password-form";
 
 const dateFormatter = new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" });
 
@@ -116,6 +122,9 @@ function AccountSection({ user }: { user: User }) {
             <Typography variant="body2">
               {`${address.street}, ${address.number} — ${address.neighborhood}, ${address.city}/${address.state}`}
             </Typography>
+            {address.complement && (
+              <Typography variant="body2">{address.complement}</Typography>
+            )}
             <Typography variant="body2" sx={{ color: "text.secondary" }}>
               CEP {formatCep(address.postalCode)}
             </Typography>
@@ -138,8 +147,19 @@ function ProfilePage() {
   const user = useRequireUser();
   const { rating } = user;
   const [tab, setTab] = useState<TabValue>("account");
+  const navigate = useNavigate();
+  const { mutate: requestVerification, isPending: isRequestingCode } =
+    useRequestEmailVerification();
 
   const activeTab = TABS.find((item) => item.value === tab) ?? TABS[0];
+
+  const verifyEmail = () =>
+    requestVerification(user.email, {
+      onSuccess: () =>
+        navigate(`/verify-email?email=${encodeURIComponent(user.email)}`, {
+          state: { codeSent: true },
+        }),
+    });
 
   return (
     <AppLayout>
@@ -199,7 +219,19 @@ function ProfilePage() {
           {!user.verifiedAt ? (
             <Alert
               severity="warning"
-              action={<Button size="small">Verificar</Button>}
+              action={
+                <Button
+                  size="small"
+                  disabled={isRequestingCode}
+                  onClick={verifyEmail}
+                >
+                  {isRequestingCode ? (
+                    <CircularProgress size={16} color="inherit" />
+                  ) : (
+                    "Verificar"
+                  )}
+                </Button>
+              }
             >
               Email não verificado.
             </Alert>
@@ -245,6 +277,18 @@ function ProfilePage() {
           ) : tab === "profile" ? (
             <Section title="Editar perfil">
               <EditProfileForm user={user} />
+            </Section>
+          ) : tab === "address" ? (
+            <Section title="Editar endereço">
+              <EditAddressForm user={user} />
+            </Section>
+          ) : tab === "email" ? (
+            <Section title="Mudar e-mail">
+              <EditEmailForm user={user} />
+            </Section>
+          ) : tab === "password" ? (
+            <Section title="Mudar senha">
+              <EditPasswordForm />
             </Section>
           ) : (
             <Section title={activeTab.label}>

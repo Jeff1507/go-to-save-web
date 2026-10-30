@@ -7,7 +7,10 @@ import {
 import {
   getProfile,
   removeAvatar,
+  updateAddress,
   updateAvatar,
+  updateEmail,
+  updatePassword,
   updateProfile,
 } from "../../data/repositories/user-repository";
 import { useToast } from "./use-toast";
@@ -61,3 +64,25 @@ export const useRemoveAvatar = () =>
 
 export const useUpdateProfile = () =>
   useUserMutation(updateProfile, "Perfil atualizado com sucesso");
+
+export const useUpdateAddress = () =>
+  useUserMutation(updateAddress, "Endereço atualizado com sucesso");
+
+export const useUpdateEmail = () =>
+  useUserMutation(updateEmail, "Código enviado para o novo e-mail");
+
+export function useUpdatePassword() {
+  const toast = useToast();
+
+  return useMutation({
+    mutationFn: updatePassword,
+    onSuccess: () => {
+      toast.show(
+        "Senha alterada com sucesso. Entre novamente com a nova senha.",
+      );
+    },
+    onError: (error) => {
+      toast.show(error.message, "error");
+    },
+  });
+}
