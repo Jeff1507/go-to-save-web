@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import {
   Alert,
   Box,
@@ -22,16 +23,16 @@ import {
 } from "@mui/icons-material";
 import AppLayout from "../components/app-layout";
 import ExpandableText from "../components/expandable-text";
-import { useRequireUser } from "../../core/hooks/use-user";
-import type { User } from "../../data/models/user";
-import { formatCep, formatCnpj } from "../../utils/format-document";
 import EditableAvatar from "../components/editable-avatar";
 import EditProfileForm from "../components/edit-profile-form";
 import EditAddressForm from "../components/edit-address-form";
-import { useNavigate } from "react-router";
-import { useRequestEmailVerification } from "../../core/hooks/use-auth";
 import EditEmailForm from "../components/edit-email-form";
 import EditPasswordForm from "../components/edit-password-form";
+import EndSessionsPanel from "../components/end-sessions-panel";
+import { useRequestEmailVerification } from "../../core/hooks/use-auth";
+import { useRequireUser } from "../../core/hooks/use-user";
+import type { User } from "../../data/models/user";
+import { formatCep, formatCnpj } from "../../utils/format-document";
 
 const dateFormatter = new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" });
 
@@ -43,18 +44,12 @@ type TabValue =
   | "password"
   | "sessions";
 
-const TABS: { value: TabValue; label: string; icon: React.ReactElement }[] = [
-  { value: "account", label: "Informações da conta", icon: <InfoOutlined /> },
-  { value: "profile", label: "Editar perfil", icon: <EditOutlined /> },
-  { value: "address", label: "Editar endereço", icon: <PlaceOutlined /> },
-  { value: "email", label: "Mudar e-mail", icon: <MailOutlined /> },
-  { value: "password", label: "Mudar senha", icon: <LockOutlined /> },
-  {
-    value: "sessions",
-    label: "Encerrar todas as sessões",
-    icon: <LogoutOutlined />,
-  },
-];
+interface TabConfig {
+  value: TabValue;
+  label: string;
+  icon: React.ReactElement;
+  render: (user: User) => React.ReactNode;
+}
 
 function Section({
   title,
@@ -99,49 +94,86 @@ function InfoRow({
   );
 }
 
-function AccountSection({ user }: { user: User }) {
+function AccountInfo({ user }: { user: User }) {
   const { address } = user;
 
   return (
-    <Section title="Informações da conta">
-      <Box
-        sx={{
-          display: "grid",
-          gap: 2,
-          gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
-        }}
-      >
-        <InfoRow label="E-mail">{user.email}</InfoRow>
-        <InfoRow label="CNPJ">{formatCnpj(user.cnpj)}</InfoRow>
-        <InfoRow label="Cadastrada em">
-          {dateFormatter.format(new Date(user.createdAt))}
-        </InfoRow>
+    <Box
+      sx={{
+        display: "grid",
+        gap: 2,
+        gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+      }}
+    >
+      <InfoRow label="E-mail">{user.email}</InfoRow>
+      <InfoRow label="CNPJ">{formatCnpj(user.cnpj)}</InfoRow>
+      <InfoRow label="Cadastrada em">
+        {dateFormatter.format(new Date(user.createdAt))}
+      </InfoRow>
 
-        <InfoRow label="Endereço">
-          <Stack spacing={0.25}>
-            <Typography variant="body2">
-              {`${address.street}, ${address.number} — ${address.neighborhood}, ${address.city}/${address.state}`}
-            </Typography>
-            {address.complement && (
-              <Typography variant="body2">{address.complement}</Typography>
-            )}
-            <Typography variant="body2" sx={{ color: "text.secondary" }}>
-              CEP {formatCep(address.postalCode)}
-            </Typography>
-            <Link
-              variant="body2"
-              href={`https://www.openstreetmap.org/?mlat=${address.latitude}&mlon=${address.longitude}#map=17/${address.latitude}/${address.longitude}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Ver no mapa
-            </Link>
-          </Stack>
-        </InfoRow>
-      </Box>
-    </Section>
+      <InfoRow label="Endereço">
+        <Stack spacing={0.25}>
+          <Typography variant="body2">
+            {`${address.street}, ${address.number} — ${address.neighborhood}, ${address.city}/${address.state}`}
+          </Typography>
+          {address.complement && (
+            <Typography variant="body2">{address.complement}</Typography>
+          )}
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
+            CEP {formatCep(address.postalCode)}
+          </Typography>
+          <Link
+            variant="body2"
+            href={`https://www.openstreetmap.org/?mlat=${address.latitude}&mlon=${address.longitude}#map=17/${address.latitude}/${address.longitude}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Ver no mapa
+          </Link>
+        </Stack>
+      </InfoRow>
+    </Box>
   );
 }
+
+const TABS: TabConfig[] = [
+  {
+    value: "account",
+    label: "Informações da conta",
+    icon: <InfoOutlined />,
+    render: (user) => <AccountInfo user={user} />,
+  },
+  {
+    value: "profile",
+    label: "Editar perfil",
+    icon: <EditOutlined />,
+    render: (user) => <EditProfileForm user={user} />,
+  },
+  {
+    value: "address",
+    label: "Editar endereço",
+    icon: <PlaceOutlined />,
+    render: (user) => <EditAddressForm user={user} />,
+  },
+  {
+    value: "email",
+    label: "Mudar e-mail",
+    icon: <MailOutlined />,
+    render: (user) => <EditEmailForm user={user} />,
+  },
+  {
+    value: "password",
+    label: "Mudar senha",
+    icon: <LockOutlined />,
+    render: () => <EditPasswordForm />,
+  },
+  {
+    value: "sessions",
+    label: "Encerrar todas as sessões",
+    icon: <LogoutOutlined />,
+    render: () => <EndSessionsPanel />,
+  },
+];
 
 function ProfilePage() {
   const user = useRequireUser();
@@ -267,36 +299,13 @@ function ProfilePage() {
         </Stack>
 
         <Box
+          key={tab}
           role="tabpanel"
           id={`profile-panel-${tab}`}
           aria-labelledby={`profile-tab-${tab}`}
           sx={{ flex: 1, minWidth: 0, width: "100%" }}
         >
-          {tab === "account" ? (
-            <AccountSection user={user} />
-          ) : tab === "profile" ? (
-            <Section title="Editar perfil">
-              <EditProfileForm user={user} />
-            </Section>
-          ) : tab === "address" ? (
-            <Section title="Editar endereço">
-              <EditAddressForm user={user} />
-            </Section>
-          ) : tab === "email" ? (
-            <Section title="Mudar e-mail">
-              <EditEmailForm user={user} />
-            </Section>
-          ) : tab === "password" ? (
-            <Section title="Mudar senha">
-              <EditPasswordForm />
-            </Section>
-          ) : (
-            <Section title={activeTab.label}>
-              <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                O conteúdo desta seção ainda será implementado.
-              </Typography>
-            </Section>
-          )}
+          <Section title={activeTab.label}>{activeTab.render(user)}</Section>
         </Box>
       </Stack>
     </AppLayout>
