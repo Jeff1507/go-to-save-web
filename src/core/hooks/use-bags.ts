@@ -8,6 +8,7 @@ import {
   updateBagStock,
 } from "../../data/repositories/bag-repository";
 import { useToast } from "./use-toast";
+import { statsQueryKey } from "./use-user";
 
 export const bagsQueryKey = ["bags"];
 
@@ -43,6 +44,7 @@ function useBagMutation<TVariables>(
     mutationFn,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: bagsQueryKey });
+      queryClient.invalidateQueries({ queryKey: statsQueryKey });
       toast.show(successMessage);
     },
     onError: (error) => {
@@ -54,11 +56,11 @@ function useBagMutation<TVariables>(
 export const useCreateBag = () =>
   useBagMutation(createBag, "Sacola criada com sucesso");
 
-export const useUpdateBag = () =>
-  useBagMutation(updateBag, "Sacola atualizada com sucesso");
-
 export const useUpdateBagStock = () =>
   useBagMutation(updateBagStock, "Estoque atualizado com sucesso");
 
 export const useCloseBag = () =>
   useBagMutation(closeBag, "Sacola fechada com sucesso");
+
+export const useUpdateBag = () =>
+  useBagMutation(updateBag, "Sacola atualizada com sucesso");

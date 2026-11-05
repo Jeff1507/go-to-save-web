@@ -7,6 +7,7 @@ import {
   listPendingOrders,
 } from "../../data/repositories/order-repository";
 import { useToast } from "./use-toast";
+import { statsQueryKey } from "./use-user";
 
 export const ordersQueryKey = ["orders"];
 
@@ -52,6 +53,7 @@ function useOrderMutation<TVariables>(
     mutationFn,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ordersQueryKey });
+      queryClient.invalidateQueries({ queryKey: statsQueryKey });
       toast.show(successMessage);
     },
     onError: (error) => {

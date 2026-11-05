@@ -35,7 +35,7 @@ import {
   VisibilityOutlined,
 } from "@mui/icons-material";
 import { usePendingOrders } from "../../core/hooks/use-orders";
-import { useRequireUser } from "../../core/hooks/use-user";
+import { useRequireUser, useStats } from "../../core/hooks/use-user";
 import type { OrderSummary } from "../../data/models/order-summary";
 import { formatCurrency } from "../../utils/format-currency";
 import { formatOrderId } from "../../utils/format-order-id";
@@ -58,6 +58,10 @@ const dateTimeFormatter = new Intl.DateTimeFormat("pt-BR", {
 function HomePage() {
   const user = useRequireUser();
   const { orders, isPending, isError, refetch } = usePendingOrders();
+  const { stats, isPending: loadingStats, isError: statsError } = useStats();
+
+  const statsHint = (hint: string) =>
+    statsError ? "Não foi possível carregar" : hint;
 
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [detailsOrderId, setDetailsOrderId] = useState<string | null>(null);
@@ -140,22 +144,29 @@ function HomePage() {
             label="Pedidos pendentes"
             icon={<PendingActionsOutlined />}
             value={orders ? orders.length : null}
+            loading={isPending}
             hint="Aguardando retirada"
           />
           <StatCard
             label="Vendas de hoje"
             icon={<PaidOutlined />}
-            hint="Em breve"
+            value={stats ? formatCurrency(stats.todaySales) : null}
+            loading={loadingStats}
+            hint={statsHint("Pedidos concluídos hoje")}
           />
           <StatCard
             label="Sacolas ativas"
             icon={<ShoppingBagOutlined />}
-            hint="Em breve"
+            value={stats?.activeBags}
+            loading={loadingStats}
+            hint={statsHint("Ativas no momento")}
           />
           <StatCard
             label="Pedidos concluídos no mês"
             icon={<TaskAltOutlined />}
-            hint="Em breve"
+            value={stats?.completedOrdersMonth}
+            loading={loadingStats}
+            hint={statsHint("No mês atual")}
           />
         </Box>
 
@@ -318,17 +329,6 @@ function HomePage() {
       >
         <MenuItem
           onClick={() => {
-            if (menuOrder) openComplete(menuOrder);
-            closeMenu();
-          }}
-        >
-          <ListItemIcon>
-            <CheckOutlined fontSize="small" />
-          </ListItemIcon>
-          <ListItemText primary="Completar" />
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
             if (menuOrder) openDetails(menuOrder.id);
             closeMenu();
           }}
@@ -337,6 +337,17 @@ function HomePage() {
             <VisibilityOutlined fontSize="small" />
           </ListItemIcon>
           <ListItemText primary="Ver" />
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            if (menuOrder) openComplete(menuOrder);
+            closeMenu();
+          }}
+        >
+          <ListItemIcon>
+            <CheckOutlined fontSize="small" />
+          </ListItemIcon>
+          <ListItemText primary="Completar" />
         </MenuItem>
 
         <Divider />

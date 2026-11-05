@@ -1,9 +1,15 @@
 import { api } from "../../core/lib/api";
+import type { Stats } from "../models/stats";
 import type { User } from "../models/user";
 
 export async function getProfile() {
   const user = await api.get("me").json<User>();
   return user;
+}
+
+export async function getStats() {
+  const stats = await api.get("me/stats").json<Stats>();
+  return stats;
 }
 
 export async function updateAvatar(avatar: File) {

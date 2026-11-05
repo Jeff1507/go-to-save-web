@@ -1,17 +1,24 @@
-import { Avatar, Paper, Stack, Typography } from "@mui/material";
+import { Avatar, Paper, Skeleton, Stack, Typography } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 
 interface StatCardProps {
   label: string;
   icon: React.ReactElement;
   value?: number | string | null;
+  loading?: boolean;
   hint?: string;
 }
 
-function StatCard({ label, icon, value, hint }: StatCardProps) {
+function StatCard({
+  label,
+  icon,
+  value,
+  loading = false,
+  hint,
+}: StatCardProps) {
   return (
     <Paper variant="outlined" sx={{ p: 2.5 }}>
-      <Stack direction="row" spacing={2} sx={{ alignItems: "start" }}>
+      <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
         <Avatar
           variant="rounded"
           sx={(theme) => ({
@@ -28,8 +35,8 @@ function StatCard({ label, icon, value, hint }: StatCardProps) {
           <Typography variant="body2" noWrap sx={{ color: "text.secondary" }}>
             {label}
           </Typography>
-          <Typography variant="h5" sx={{ fontWeight: 700 }}>
-            {value ?? "—"}
+          <Typography variant="h5" component="div" sx={{ fontWeight: 700 }}>
+            {loading ? <Skeleton width={72} /> : (value ?? "—")}
           </Typography>
           {hint && (
             <Typography

@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-query";
 import {
   getProfile,
+  getStats,
   removeAvatar,
   updateAddress,
   updateAvatar,
@@ -16,6 +17,7 @@ import {
 import { useToast } from "./use-toast";
 
 export const userQueryKey = ["user"];
+export const statsQueryKey = ["stats"];
 
 export function useUser() {
   const { data: user, ...rest } = useQuery({
@@ -35,6 +37,16 @@ export function useRequireUser() {
   });
 
   return user;
+}
+
+export function useStats() {
+  const { data: stats, ...rest } = useQuery({
+    queryKey: statsQueryKey,
+    queryFn: getStats,
+    retry: false,
+  });
+
+  return { stats, ...rest };
 }
 
 function useUserMutation<TVariables>(
